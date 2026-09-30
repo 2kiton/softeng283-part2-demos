@@ -3,8 +3,10 @@ package a3;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.times;
 
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 public class PasswordCheckerTest {
 
@@ -12,7 +14,7 @@ public class PasswordCheckerTest {
   public void validatePassword_length7_returnsError() {
     // ARANGE
     String password = "Aa1!xxx";
-    PasswordChecker checker = new PasswordChecker();
+    PasswordChecker checker = new PasswordChecker(Mockito.mock(Hash.class));
     // ACT
     // ASSERT
     assertThrows(InvalidPasswordException.class, () -> checker.checkPwd(password));
@@ -22,7 +24,7 @@ public class PasswordCheckerTest {
   public void validatePassword_length8_returnsOk() {
     // ARANGE
     String password = "Aa1!xxxx";
-    PasswordChecker checker = new PasswordChecker();
+    PasswordChecker checker = new PasswordChecker(Mockito.mock(Hash.class));
     // ACT
     boolean result = checker.checkPwd(password);
     // ASSERT
@@ -30,11 +32,11 @@ public class PasswordCheckerTest {
     assertDoesNotThrow(() -> checker.checkPwd(password), "exception should not throw");
   }
 
-@Test
-  public void validatePassword_length9_returnsOk(){
- // ARANGE
+  @Test
+  public void validatePassword_length9_returnsOk() {
+    // ARANGE
     String password = "Aa1!xxxxy";
-    PasswordChecker checker = new PasswordChecker();
+    PasswordChecker checker = new PasswordChecker(Mockito.mock(Hash.class));
     // ACT
     boolean result = checker.checkPwd(password);
     // ASSERT
@@ -43,22 +45,10 @@ public class PasswordCheckerTest {
   }
 
   @Test
-  public void validatePassword_length19_returnsOk(){
- // ARANGE
+  public void validatePassword_length19_returnsOk() {
+    // ARANGE
     String password = "Aa1!xxxxy1234567890";
-    PasswordChecker checker = new PasswordChecker();
-    // ACT
-    boolean result = checker.checkPwd(password);
-    // ASSERT
-    assertTrue(result);
-    assertDoesNotThrow(() -> checker.checkPwd(password), "exception should not throw");
-  }
-
-    @Test
-  public void validatePassword_length20_returnsOk(){
- // ARANGE
-    String password = "Aa1!xxxxy12345678901";
-    PasswordChecker checker = new PasswordChecker();
+    PasswordChecker checker = new PasswordChecker(Mockito.mock(Hash.class));
     // ACT
     boolean result = checker.checkPwd(password);
     // ASSERT
@@ -67,15 +57,36 @@ public class PasswordCheckerTest {
   }
 
   @Test
-  public void validatePassword_length21_returnsOk(){
- // ARANGE
+  public void validatePassword_length20_returnsOk() {
+    // ARANGE
+    String password = "Aa1!xxxxy12345678901";
+    PasswordChecker checker = new PasswordChecker(Mockito.mock(Hash.class));
+    // ACT
+    boolean result = checker.checkPwd(password);
+    // ASSERT
+    assertTrue(result);
+    assertDoesNotThrow(() -> checker.checkPwd(password), "exception should not throw");
+  }
+
+  @Test
+  public void validatePassword_length21_returnsOk() {
+    // ARANGE
     String password = "Aa1!xxxxy123456789012";
-    PasswordChecker checker = new PasswordChecker();
+    PasswordChecker checker = new PasswordChecker(Mockito.mock(Hash.class));
     // ACT
     assertThrows(InvalidPasswordException.class, () -> checker.checkPwd(password));
   }
 
-
-
-
+  @Test
+  public void validatePassword_whenSuccessful_isHashed() {
+    // ARRANGE
+    String password = "Abcde1!x";
+    Hash hash = Mockito.mock(Hash.class);
+    PasswordChecker checker = new PasswordChecker(hash);
+    // ACT
+    boolean result = checker.checkPwd(password);
+    // ASSERT
+    assertTrue(result);
+    Mockito.verify(hash, times(1)).hashString(password);
+  }
 }
