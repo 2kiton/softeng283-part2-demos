@@ -7,6 +7,6 @@ public class PasswordChecker {
     if (password.length() < 8) {
       throw new InvalidPasswordException("length is not enough");
     }
-    return true;
+      return true;
   }
 }
