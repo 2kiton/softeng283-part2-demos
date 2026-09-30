@@ -8,6 +8,7 @@ import java.util.Random;
 /** Allocates named seats for a small event. */
 public class SeatAllocator {
 
+  private int k= 0;
   private final List<String> availableSeats;
   private final Random random;
 
